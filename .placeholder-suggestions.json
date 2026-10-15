@@ -1,0 +1,40 @@
+{
+  "SkateboardsDialog.tsx": {
+    "bezeichnung": "z. B. Street Deck Pro",
+    "marke": "z. B. Element, Santa Cruz",
+    "deckbreite": "z. B. 8.0",
+    "preis_pro_tag": "z. B. 12.50",
+    "bemerkungen": "Zusätzliche Hinweise zum Board"
+  },
+  "KundenDialog.tsx": {
+    "kunde_firstname": "z. B. Lena",
+    "kunde_lastname": "z. B. Müller",
+    "geburtsdatum": "Wann wurde die Person geboren?",
+    "email": "z. B. lena@beispiel.de",
+    "instagram_profil": "z. B. instagram.com/lena",
+    "strasse": "z. B. Hauptstraße",
+    "hausnummer": "z. B. 12a",
+    "plz": "z. B. 80331",
+    "ort": "z. B. München"
+  },
+  "VerleihvorgaengeDialog.tsx": {
+    "kunde": "Welcher Kunde?",
+    "skateboard": "Welches Skateboard?",
+    "ausleihdatum": "Wann beginnt die Ausleihe?",
+    "geplante_rueckgabe": "Wann wird es zurückgebracht?",
+    "tatsaechliche_rueckgabe": "Wann kam es zurück?",
+    "kaution": "z. B. 50",
+    "gesamtpreis": "z. B. 30",
+    "bemerkungen": "Besonderheiten zur Ausleihe"
+  },
+  "SkateparksDialog.tsx": {
+    "parkname": "z. B. Skatepark Westend",
+    "strasse": "z. B. Parkstraße",
+    "hausnummer": "z. B. 12a",
+    "plz": "z. B. 80331",
+    "ort": "z. B. München",
+    "oeffnungszeiten": "Eine Zeit pro Zeile",
+    "ansprechperson": "z. B. Max Mustermann",
+    "bemerkungen": "Was sollte man wissen?"
+  }
+}

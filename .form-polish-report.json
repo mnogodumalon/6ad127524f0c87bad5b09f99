@@ -1,0 +1,37 @@
+{
+  "entities": {
+    "Skateboards": {
+      "placeholders_set": 5,
+      "defaults_keys": [
+        "zustand",
+        "verfuegbar"
+      ],
+      "computed_keys": [],
+      "reason": "Reine Stammdaten ohne Datumspaare oder Verknüpfungen, daher keine Formel."
+    },
+    "Kunden": {
+      "placeholders_set": 9,
+      "defaults_keys": [],
+      "computed_keys": [],
+      "reason": "Reine Stammdaten ohne numerische Felder, daher keine Formeln und keine sinnvollen Standardwerte."
+    },
+    "Verleihvorgänge": {
+      "placeholders_set": 8,
+      "defaults_keys": [
+        "ausleihdatum",
+        "geplante_rueckgabe",
+        "status"
+      ],
+      "computed_keys": [
+        "_verleih_dauer_tage"
+      ],
+      "reason": "Gesamtpreis = Leihdauer in Tagen mal Preis pro Tag des Skateboards, plus virtuelle Dauer für die Zusammenfassung."
+    },
+    "Skateparks": {
+      "placeholders_set": 8,
+      "defaults_keys": [],
+      "computed_keys": [],
+      "reason": "Reine Stammdaten ohne numerische Felder, daher keine Formeln oder Standardwerte."
+    }
+  }
+}

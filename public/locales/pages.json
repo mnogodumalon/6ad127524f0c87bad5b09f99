@@ -1,0 +1,25 @@
+{
+  "pages": {
+    "en": {
+      "Alles im Plan — {0} von {1} Boards sind frei.": "All on track — {0} of {1} boards are available.",
+      "Board ausgeben": "Issue board",
+      "Boards frei": "Boards available",
+      "Frei verfügbar": "Available",
+      "Heute bringen {0} ihre Boards zurück.": "Today {0} are returning their boards.",
+      "Heute fällig": "Due today",
+      "Keine Rückgaben offen.": "No open returns.",
+      "Lege dein erstes Board und deinen ersten Verleih an.": "Create your first board and your first rental.",
+      "Neuer Verleih": "New rental",
+      "Rückgabe erfassen": "Record return",
+      "Rückgaben heute & überfällig": "Returns today & overdue",
+      "Typ": "Type",
+      "Verfügbare Boards nach Typ": "Available boards by type",
+      "fällig war": "was due",
+      "{0} {1} ein Board noch nicht zurückgebracht.": "{0} {1} not returned a board yet.",
+      "Überfällig": "Overdue",
+      "überfällig": "overdue",
+      "✓ Zurück": "✓ Returned"
+    }
+  },
+  "v": 1
+}

@@ -1,0 +1,224 @@
+{
+  "version": 1,
+  "language": "de",
+  "understanding": {
+    "summary": "Die Anwendung verwaltet den Verleih von Skateboards: Boards, Kunden und jeden Verleihvorgang vom Reservieren bis zur Rückgabe. Zusätzlich gibt es eine Übersicht der Skateparks, in denen ihr präsent seid. Jeder Kunde kann optional einen Instagram-Profil-Link hinterlegen.",
+    "roles": [
+      "Inhaber / Leitung",
+      "Verleih-Mitarbeiter"
+    ],
+    "main_tasks": [
+      "Skateboards und Kunden pflegen",
+      "Verleih anlegen und Boards ausgeben",
+      "Rückgabe erfassen und Zustand prüfen",
+      "Überfällige Verleihe im Blick behalten",
+      "Skatepark-Standorte pflegen"
+    ],
+    "platform_roles": [
+      {
+        "persona": "Inhaber / Leitung",
+        "role": "administrator",
+        "apps": [
+          "skateboards",
+          "kunden",
+          "verleihvorgaenge",
+          "skateparks"
+        ]
+      },
+      {
+        "persona": "Verleih-Mitarbeiter",
+        "role": "datenverarbeitung",
+        "apps": [
+          "skateboards",
+          "kunden",
+          "verleihvorgaenge"
+        ]
+      },
+      {
+        "persona": "Verleih-Mitarbeiter",
+        "role": "minimal",
+        "apps": [
+          "skateparks"
+        ]
+      }
+    ]
+  },
+  "flows": [
+    {
+      "slug": "verleih-anlegen",
+      "label": {
+        "de": "Verleih anlegen",
+        "en": "Create rental"
+      },
+      "description": "Kunde und verfügbares Skateboard auswählen, Zeitraum und Kaution erfassen und den Verleihvorgang als reserviert anlegen.",
+      "priority": "must",
+      "writes": [
+        {
+          "entity": "kunden",
+          "op": "create",
+          "when": "optional",
+          "fields": {
+            "kunde_firstname": "user",
+            "kunde_lastname": "user",
+            "geburtsdatum": "user",
+            "email": "user",
+            "telefon": "user",
+            "instagram_profil": "user",
+            "schutzausruestung": "user"
+          },
+          "needs": {}
+        },
+        {
+          "entity": "verleihvorgaenge",
+          "op": "create",
+          "when": "always",
+          "fields": {
+            "kunde": "picked",
+            "skateboard": "picked",
+            "ausleihdatum": "user",
+            "geplante_rueckgabe": "user",
+            "kaution": "user",
+            "status": "fixed:reserviert"
+          },
+          "needs": {}
+        }
+      ],
+      "required": [
+        "verleihvorgaenge.ausleihdatum",
+        "verleihvorgaenge.geplante_rueckgabe",
+        "verleihvorgaenge.skateboard"
+      ],
+      "brief": "# Flow `verleih-anlegen` — Verleih anlegen\nKunde und verfügbares Skateboard auswählen, Zeitraum und Kaution erfassen und den Verleihvorgang als reserviert anlegen.\n\n## Your hook — import it, never rebuild what it owns\n`import { useVerleihAnlegenFlow } from '@/lib/journey/flows/VerleihAnlegen';` — generated from the Schreibliste below. It OWNS the form(s), one record search per picked field (columns and filter from the plan) and the submit plan with every fixed and derived value. You compose: `flow.forms.<entity>` for <Bound>/<Field>, `{...flow.picks.<field>.select} {...flow.pick('<field>')}` (or `flow.pickMany` for a multi pick) for <EntitySelectStep>, `flow.validateStep(n)` in StepNav.onNext, `flow.submit` + `flow.formList` for SummaryStep/SuccessStep, `flow.reset()`; what the hook does not own reads through its door `flow.port` — availability `useOccupancy(flow.port, '<entity>', { resource })`, a count `useRecordCount(flow.port, …)` — never import servicePort next to the hook. Options: `steps` (field → step), `items` (how a hit reads, per pick: kunde, skateboard), `initial`, `messages`. The hook's docblock in .lane-context.md shows the exact call. Never import servicePort, useStepForm, useJourneySubmit, useRecordSearch or useDashboardData in this page — check-intents refuses a page that uses the hook and any of them.\n\n## Steps (in this order)\n1. Kunden auswählen oder neu anlegen\n2. Verfügbares Skateboard auswählen\n3. Ausleihdatum und geplantes Rückgabedatum eingeben\n4. Kaution eingeben und speichern\n\n## Schreibliste — the ONLY writes this flow makes (the gate compares your plan steps with this list)\n- creates `kunden` (only when the flow needs it):\n    - `kunde_firstname`: the user enters it (bind it through the layer: form.field/…)\n    - `kunde_lastname`: the user enters it (bind it through the layer: form.field/…)\n    - `geburtsdatum`: the user enters it (bind it through the layer: form.field/…)\n    - `email`: the user enters it (bind it through the layer: form.field/…)\n    - `telefon`: the user enters it (bind it through the layer: form.field/…)\n    - `instagram_profil`: the user enters it (bind it through the layer: form.field/…)\n    - `schutzausruestung`: the user enters it (bind it through the layer: form.field/…)\n- creates `verleihvorgaenge`:\n    - `kunde`: from the record the user picks in this flow\n    - `skateboard`: from the record the user picks in this flow — **REQUIRED in this flow** (mark it required and validate it before the step advances, whatever the app's base view says): tool `gesamtpreis-berechnen` → `gesamtpreis` cannot be built without it\n    - `ausleihdatum`: the user enters it (bind it through the layer: form.field/…) — **REQUIRED in this flow** (mark it required and validate it before the step advances, whatever the app's base view says): tool `gesamtpreis-berechnen` → `gesamtpreis` cannot be built without it\n    - `geplante_rueckgabe`: the user enters it (bind it through the layer: form.field/…) — **REQUIRED in this flow** (mark it required and validate it before the step advances, whatever the app's base view says): tool `gesamtpreis-berechnen` → `gesamtpreis` cannot be built without it\n    - `kaution`: the user enters it (bind it through the layer: form.field/…)\n    - `status`: fixed value `reserviert` — set it in the plan step's values, never ask\n\n## Reads\n- `skateboards` columns bezeichnung, marke, typ, deckbreite, zustand, preis_pro_tag\n- `kunden` columns kunde_firstname, kunde_lastname, email, telefon\n\n## Checks BEFORE the write (block the submit with the message when they fail)\n- no_overlap (from=`verleihvorgaenge.ausleihdatum`, to=`verleihvorgaenge.geplante_rueckgabe`, resource=`verleihvorgaenge.skateboard`) — message: „Dieses Skateboard ist im gewählten Zeitraum bereits verliehen oder reserviert.“\n\n## Success page\n- shows: `verleihvorgaenge.kunde`, `verleihvorgaenge.skateboard`, `verleihvorgaenge.geplante_rueckgabe`\n- next flows to offer: `board-ausgeben`\n\n## Never write these — another flow or a tool owns them\n- `skateboards.verfuegbar` (owner: intent `board-ausgeben`)\n- `verleihvorgaenge.tatsaechliche_rueckgabe` (owner: intent `rueckgabe-erfassen`)\n- `verleihvorgaenge.zustand_rueckgabe` (owner: intent `rueckgabe-erfassen`)\n- `verleihvorgaenge.bemerkungen` (owner: intent `rueckgabe-erfassen`)\n- `verleihvorgaenge.gesamtpreis` (owner: tool `gesamtpreis-berechnen`)\n"
+    },
+    {
+      "slug": "board-ausgeben",
+      "label": {
+        "de": "Board ausgeben",
+        "en": "Hand out board"
+      },
+      "description": "Einen reservierten Verleihvorgang auswählen und das Skateboard übergeben: Status wird Verliehen, das Board nicht mehr verfügbar.",
+      "priority": "must",
+      "writes": [
+        {
+          "entity": "verleihvorgaenge",
+          "op": "update",
+          "when": "always",
+          "fields": {
+            "status": "fixed:verliehen"
+          },
+          "needs": {}
+        },
+        {
+          "entity": "skateboards",
+          "op": "update",
+          "when": "always",
+          "fields": {
+            "verfuegbar": "fixed:false"
+          },
+          "needs": {}
+        }
+      ],
+      "required": [],
+      "brief": "# Flow `board-ausgeben` — Board ausgeben\nEinen reservierten Verleihvorgang auswählen und das Skateboard übergeben: Status wird Verliehen, das Board nicht mehr verfügbar.\n\n## Your hook — import it, never rebuild what it owns\n`import { useBoardAusgebenFlow } from '@/lib/journey/flows/BoardAusgeben';` — generated from the Schreibliste below. It OWNS the form(s), one record search per picked field (columns and filter from the plan) and the submit plan with every fixed and derived value. You compose: `flow.forms.<entity>` for <Bound>/<Field>, `{...flow.picks.<field>.select} {...flow.pick('<field>')}` (or `flow.pickMany` for a multi pick) for <EntitySelectStep>, `flow.validateStep(n)` in StepNav.onNext, `flow.submit` + `flow.formList` for SummaryStep/SuccessStep, `flow.reset()`; what the hook does not own reads through its door `flow.port` — availability `useOccupancy(flow.port, '<entity>', { resource })`, a count `useRecordCount(flow.port, …)` — never import servicePort next to the hook. Options: `steps` (field → step), `items` (how a hit reads, per pick), `initial`, `messages`. The hook's docblock in .lane-context.md shows the exact call. This flow CHANGES a record of `verleihvorgaenge`: `{...flow.picks.verleihvorgaenge.select} {...flow.pick('verleihvorgaenge')}` picks it, the hook prefills the form with its current values and updates THAT record — never a create step, never a list from useDashboardData. This flow CHANGES a record of `skateboards`: `{...flow.picks.skateboards.select} {...flow.pick('skateboards')}` picks it, the hook prefills the form with its current values and updates THAT record — never a create step, never a list from useDashboardData. Never import servicePort, useStepForm, useJourneySubmit, useRecordSearch or useDashboardData in this page — check-intents refuses a page that uses the hook and any of them.\n\n## Steps (in this order)\n1. Reservierten Verleihvorgang auswählen\n2. Übergabe bestätigen\n\n## Schreibliste — the ONLY writes this flow makes (the gate compares your plan steps with this list)\n- updates `verleihvorgaenge`:\n    - `status`: fixed value `verliehen` — set it in the plan step's values, never ask\n- updates `skateboards`:\n    - `verfuegbar`: fixed value `false` — set it in the plan step's values, never ask\n\n## Reads\n- `verleihvorgaenge` columns kunde, skateboard, ausleihdatum, geplante_rueckgabe, kaution\n\n## Success page\n- shows: `verleihvorgaenge.status`, `verleihvorgaenge.skateboard`\n- next flows to offer: `rueckgabe-erfassen`\n\n## Never write these — another flow or a tool owns them\n- `kunden.kunde_firstname` (owner: intent `verleih-anlegen`)\n- `kunden.kunde_lastname` (owner: intent `verleih-anlegen`)\n- `kunden.geburtsdatum` (owner: intent `verleih-anlegen`)\n- `kunden.email` (owner: intent `verleih-anlegen`)\n- `kunden.telefon` (owner: intent `verleih-anlegen`)\n- `kunden.instagram_profil` (owner: intent `verleih-anlegen`)\n- `kunden.schutzausruestung` (owner: intent `verleih-anlegen`)\n- `verleihvorgaenge.kunde` (owner: intent `verleih-anlegen`)\n- `verleihvorgaenge.skateboard` (owner: intent `verleih-anlegen`)\n- `verleihvorgaenge.ausleihdatum` (owner: intent `verleih-anlegen`)\n- `verleihvorgaenge.geplante_rueckgabe` (owner: intent `verleih-anlegen`)\n- `verleihvorgaenge.kaution` (owner: intent `verleih-anlegen`)\n- `verleihvorgaenge.tatsaechliche_rueckgabe` (owner: intent `rueckgabe-erfassen`)\n- `verleihvorgaenge.zustand_rueckgabe` (owner: intent `rueckgabe-erfassen`)\n- `verleihvorgaenge.bemerkungen` (owner: intent `rueckgabe-erfassen`)\n- `verleihvorgaenge.gesamtpreis` (owner: tool `gesamtpreis-berechnen`)\n"
+    },
+    {
+      "slug": "rueckgabe-erfassen",
+      "label": {
+        "de": "Rückgabe erfassen",
+        "en": "Record return"
+      },
+      "description": "Einen verliehenen oder überfälligen Verleihvorgang auswählen, Rückgabe mit Zustand erfassen und das Board wieder verfügbar machen.",
+      "priority": "must",
+      "writes": [
+        {
+          "entity": "verleihvorgaenge",
+          "op": "update",
+          "when": "always",
+          "fields": {
+            "tatsaechliche_rueckgabe": "derived:today",
+            "zustand_rueckgabe": "user",
+            "bemerkungen": "user",
+            "status": "fixed:zurueckgegeben"
+          },
+          "needs": {}
+        },
+        {
+          "entity": "skateboards",
+          "op": "update",
+          "when": "always",
+          "fields": {
+            "verfuegbar": "fixed:true"
+          },
+          "needs": {}
+        }
+      ],
+      "required": [],
+      "brief": "# Flow `rueckgabe-erfassen` — Rückgabe erfassen\nEinen verliehenen oder überfälligen Verleihvorgang auswählen, Rückgabe mit Zustand erfassen und das Board wieder verfügbar machen.\n\n## Your hook — import it, never rebuild what it owns\n`import { useRueckgabeErfassenFlow } from '@/lib/journey/flows/RueckgabeErfassen';` — generated from the Schreibliste below. It OWNS the form(s), one record search per picked field (columns and filter from the plan) and the submit plan with every fixed and derived value. You compose: `flow.forms.<entity>` for <Bound>/<Field>, `{...flow.picks.<field>.select} {...flow.pick('<field>')}` (or `flow.pickMany` for a multi pick) for <EntitySelectStep>, `flow.validateStep(n)` in StepNav.onNext, `flow.submit` + `flow.formList` for SummaryStep/SuccessStep, `flow.reset()`; what the hook does not own reads through its door `flow.port` — availability `useOccupancy(flow.port, '<entity>', { resource })`, a count `useRecordCount(flow.port, …)` — never import servicePort next to the hook. Options: `steps` (field → step), `items` (how a hit reads, per pick), `initial`, `messages`. The hook's docblock in .lane-context.md shows the exact call. This flow CHANGES a record of `verleihvorgaenge`: `{...flow.picks.verleihvorgaenge.select} {...flow.pick('verleihvorgaenge')}` picks it, the hook prefills the form with its current values and updates THAT record — never a create step, never a list from useDashboardData. This flow CHANGES a record of `skateboards`: `{...flow.picks.skateboards.select} {...flow.pick('skateboards')}` picks it, the hook prefills the form with its current values and updates THAT record — never a create step, never a list from useDashboardData. Never import servicePort, useStepForm, useJourneySubmit, useRecordSearch or useDashboardData in this page — check-intents refuses a page that uses the hook and any of them.\n\n## Steps (in this order)\n1. Offenen Verleihvorgang auswählen\n2. Zustand bei Rückgabe angeben\n3. Bemerkungen ergänzen und abschließen\n\n## Schreibliste — the ONLY writes this flow makes (the gate compares your plan steps with this list)\n- updates `verleihvorgaenge`:\n    - `tatsaechliche_rueckgabe`: derived: today() — set it in the plan step, never ask\n    - `zustand_rueckgabe`: the user enters it (bind it through the layer: form.field/…)\n    - `bemerkungen`: the user enters it (bind it through the layer: form.field/…)\n    - `status`: fixed value `zurueckgegeben` — set it in the plan step's values, never ask\n- updates `skateboards`:\n    - `verfuegbar`: fixed value `true` — set it in the plan step's values, never ask\n\n## Reads\n- `verleihvorgaenge` columns kunde, skateboard, ausleihdatum, geplante_rueckgabe, status\n\n## Success page\n- shows: `verleihvorgaenge.status`, `verleihvorgaenge.tatsaechliche_rueckgabe`, `verleihvorgaenge.zustand_rueckgabe`\n- next flows to offer: `verleih-anlegen`\n\n## Never write these — another flow or a tool owns them\n- `kunden.kunde_firstname` (owner: intent `verleih-anlegen`)\n- `kunden.kunde_lastname` (owner: intent `verleih-anlegen`)\n- `kunden.geburtsdatum` (owner: intent `verleih-anlegen`)\n- `kunden.email` (owner: intent `verleih-anlegen`)\n- `kunden.telefon` (owner: intent `verleih-anlegen`)\n- `kunden.instagram_profil` (owner: intent `verleih-anlegen`)\n- `kunden.schutzausruestung` (owner: intent `verleih-anlegen`)\n- `verleihvorgaenge.kunde` (owner: intent `verleih-anlegen`)\n- `verleihvorgaenge.skateboard` (owner: intent `verleih-anlegen`)\n- `verleihvorgaenge.ausleihdatum` (owner: intent `verleih-anlegen`)\n- `verleihvorgaenge.geplante_rueckgabe` (owner: intent `verleih-anlegen`)\n- `verleihvorgaenge.kaution` (owner: intent `verleih-anlegen`)\n- `verleihvorgaenge.gesamtpreis` (owner: tool `gesamtpreis-berechnen`)\n"
+    }
+  ],
+  "public_pages": [],
+  "tools": [
+    {
+      "id": "gesamtpreis-berechnen",
+      "purpose": "Berechnet bei Anlegen eines Verleihvorgangs den Gesamtpreis aus Preis pro Tag des Skateboards und Anzahl der Tage zwischen Ausleihdatum und geplantem Rückgabedatum."
+    },
+    {
+      "id": "ueberfaellige-markieren",
+      "purpose": "Setzt täglich alle verliehenen Verleihvorgänge, deren geplantes Rückgabedatum vorbei ist, auf Überfällig."
+    }
+  ],
+  "covered_by_platform": [
+    {
+      "wish": "Modul mit Standorten von Skateparks",
+      "feature": "list_page"
+    },
+    {
+      "wish": "Instagram-Profil-Link pro Kunde (optional)",
+      "feature": "record_form"
+    },
+    {
+      "wish": "Skateboards und Kunden erfassen und bearbeiten",
+      "feature": "record_form"
+    }
+  ],
+  "ownership": {
+    "kunden": {
+      "kunde_firstname": "intent:verleih-anlegen",
+      "kunde_lastname": "intent:verleih-anlegen",
+      "geburtsdatum": "intent:verleih-anlegen",
+      "email": "intent:verleih-anlegen",
+      "telefon": "intent:verleih-anlegen",
+      "instagram_profil": "intent:verleih-anlegen",
+      "schutzausruestung": "intent:verleih-anlegen"
+    },
+    "verleihvorgaenge": {
+      "kunde": "intent:verleih-anlegen",
+      "skateboard": "intent:verleih-anlegen",
+      "ausleihdatum": "intent:verleih-anlegen",
+      "geplante_rueckgabe": "intent:verleih-anlegen",
+      "kaution": "intent:verleih-anlegen",
+      "status": "tool:ueberfaellige-markieren",
+      "tatsaechliche_rueckgabe": "intent:rueckgabe-erfassen",
+      "zustand_rueckgabe": "intent:rueckgabe-erfassen",
+      "bemerkungen": "intent:rueckgabe-erfassen",
+      "gesamtpreis": "tool:gesamtpreis-berechnen"
+    },
+    "skateboards": {
+      "verfuegbar": "intent:rueckgabe-erfassen"
+    }
+  },
+  "dashboard": {
+    "focus": [
+      "Aktuell verliehene Skateboards",
+      "Überfällige Rückgaben",
+      "Heute fällige Rückgaben",
+      "Verfügbare Skateboards"
+    ],
+    "hints": [
+      "Überfällige Verleihe hervorheben",
+      "Verfügbarkeit der Boards nach Typ zeigen",
+      "Skateparks als einfache Liste in der Datenverwaltung"
+    ],
+    "wishes": []
+  }
+}
