@@ -14,6 +14,10 @@ import { IntentPolicyLoader } from '@/components/IntentPolicyLoader';
 import IntentsAdmin from '@/pages/IntentsAdmin';
 import AppMap from '@/pages/AppMap';
 // <custom:imports>
+const IntentVerleihAnlegenPage = lazy(() => import('@/pages/intents/VerleihAnlegenPage'));
+import { DashboardSkeleton } from '@/components/DashboardStates';
+const IntentBoardAusgebenPage = lazy(() => import('@/pages/intents/BoardAusgebenPage'));
+const IntentRueckgabeErfassenPage = lazy(() => import('@/pages/intents/RueckgabeErfassenPage'));
 // </custom:imports>
 
 // Lazy: public pages live outside <Layout> and only load on /#/public/:slug —
@@ -85,6 +89,9 @@ export default function App() {
                 <Route path="verwaltung/oeffentliche-seiten" element={<PublicPagesAdmin />} />
                 <Route path="verwaltung/oeffentliche-seiten/:slug/felder" element={<PublicPageFields />} />
                 {/* <custom:routes> */}
+                <Route path="intents/verleih-anlegen" element={<Suspense fallback={<DashboardSkeleton />}><IntentVerleihAnlegenPage /></Suspense>} />
+                <Route path="intents/board-ausgeben" element={<Suspense fallback={<DashboardSkeleton />}><IntentBoardAusgebenPage /></Suspense>} />
+                <Route path="intents/rueckgabe-erfassen" element={<Suspense fallback={<DashboardSkeleton />}><IntentRueckgabeErfassenPage /></Suspense>} />
                 {/* </custom:routes> */}
                 {/* An unknown hash (a bookmark from before a rebuild renamed the
                     flows, a mistyped link) must not be a blank page. */}

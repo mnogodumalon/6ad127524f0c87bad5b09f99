@@ -33,6 +33,7 @@ export interface OccupancyRule {
 
 export const OCCUPANCY: Partial<Record<EntityKey, OccupancyRule>> = {
   // <custom:occupancy>
+  verleihvorgaenge: { from: 'ausleihdatum', to: 'geplante_rueckgabe', resource: 'skateboard', statusField: 'status', freeKeys: ['zurueckgegeben'] },
   // </custom:occupancy>
 };
 

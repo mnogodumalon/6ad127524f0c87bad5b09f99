@@ -20,6 +20,7 @@
 import type { ComponentType } from 'react';
 
 // <custom:intent-imports>
+import { IconCalendarPlus, IconHandOff, IconArrowBackUp } from '@tabler/icons-react';
 // </custom:intent-imports>
 
 export interface IntentLink {
@@ -42,6 +43,9 @@ export interface IntentLink {
 
 export const INTENTS: IntentLink[] = [
   // <custom:intents>
+  { path: '/intents/verleih-anlegen', label: { de: 'Verleih anlegen', en: 'Create rental' }, icon: IconCalendarPlus, description: 'Kunde und Skateboard wählen, Zeitraum und Kaution erfassen, Verleih reservieren' },
+  { path: '/intents/board-ausgeben', label: { de: 'Board ausgeben', en: 'Hand out board' }, icon: IconHandOff, description: 'Reservierten Verleih auswählen und das Board übergeben' },
+  { path: '/intents/rueckgabe-erfassen', label: { de: 'Rückgabe erfassen', en: 'Record return' }, icon: IconArrowBackUp, description: 'Verliehenen Vorgang auswählen, Rückgabe mit Zustand erfassen' },
   // </custom:intents>
 ];
 
@@ -52,7 +56,7 @@ export const INTENTS: IntentLink[] = [
  * purpose — a scaffold update resets it to false (self-healing if Phase 2
  * never ran).
  */
-export const INTENTS_PENDING = true;
+export const INTENTS_PENDING = false;
 
 /**
  * When the Phase-1 bundle was deployed (ISO, set by the service together with
